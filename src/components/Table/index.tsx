@@ -7,6 +7,45 @@ interface ISupplierTableProps {
 
 const TableIndex: React.FC<any> = ({ Headers, Columns, Favourite }) => {
   const router = useRouter();
+ 
+
+  //check ifsc code is in favourites
+  const IsFavourite = (code: string) => {
+    const favourites = localStorage.getItem("favourites");
+    const favs = JSON.parse(favourites);
+    if (favs.some(item => item.ifsc === code)) {
+      return true;
+
+    }
+    return false;
+  };
+
+
+
+  const removeFromLocalStorage = (id: string) => {
+    const favourites = localStorage.getItem("favourites");
+    const favouritesArray = JSON.parse(favourites);
+    const index = favouritesArray.findIndex((item: any) => item.ifsc === id);
+    favouritesArray.splice(index,1);
+    localStorage.setItem("favourites", JSON.stringify(favouritesArray));
+  };
+
+  const AddToFavourites = (data: any) => {
+    const favourites = localStorage.getItem("favourites");
+    if (favourites) {
+      const favouritesArray = JSON.parse(favourites);
+      if(favouritesArray.some(item => item.ifsc === data.ifsc)){
+        return -1;
+      } else {
+      const newFavourites = [...favouritesArray, data];
+      localStorage.setItem("favourites", JSON.stringify(newFavourites));
+    }
+    } else {
+      localStorage.setItem("favourites", JSON.stringify([data]));
+    }
+  };
+
+
   const Th: React.FC<ISupplierTableProps> = ({ title = "" }) => (
     <th className="py-3 px-6 text-left ">{title}</th>
   );
@@ -24,12 +63,17 @@ const TableIndex: React.FC<any> = ({ Headers, Columns, Favourite }) => {
         {Object.keys(data[0]).map((key, index) => (
           <TdContent content={data[0][key]} key={index} />
         ))}
+
+
         <button
-        onClick={() => console.log(data[0])}
-        className="bg-indigo-500 text-white px-4 py-2 rounded-lg shadow-lg">
+        onClick={() => 
+          IsFavourite(data[0].ifsc) ? removeFromLocalStorage(data[0].ifsc) : AddToFavourites(data[0])
+        }
+        className="mx-auto pt-2 flex text-center align-center justify-center">
+          {IsFavourite(data[0].ifsc) ? 
           <svg
-            className="w-6 h-6"
-            fill="none"
+            className="w-6 h-6 text-indigo-500"
+            fill='none'
             strokeLinecap="round"
             strokeLinejoin="round"
             strokeWidth="2"
@@ -37,7 +81,20 @@ const TableIndex: React.FC<any> = ({ Headers, Columns, Favourite }) => {
             stroke="currentColor"
           >
             <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"></path>
-          </svg>
+          </svg> :
+          <svg
+          className="w-6 h-6 text-indigo-500"
+          fill='text-indigo-500'
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth="2"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"></path>
+        </svg>
+          
+          }
         </button>
       </tr>
     </>

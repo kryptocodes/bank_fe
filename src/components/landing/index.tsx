@@ -86,22 +86,18 @@ const Index: React.FC<indexProps> = ({}) => {
 
   const Component = () => (
     <>
-      {!data?.loading ? (
-        <>
           {data !== undefined && (
-            <TableIndex Headers={HeaderProduct} Columns={ColumnProduct} />
+            <TableIndex Headers={HeaderProduct} Columns={ColumnProduct} Favourite />
           )}
-        </>
-      ) : (
-        "Loading"
-      )}
     </>
   );
   return (
     <>
       {" "}
       <h1 className="text-4xl mx-auto text-center">Bank</h1>
-      <div className="flex mx-auto">
+      {!data?.loading ? (
+        <>
+      <div className="flex mx-auto py-10 p-4 sm:p-20">
         <select value={City} onChange={(e) => setCity(e.target.value)}>
           <option value="BANGALORE">BANGALORE</option>
           <option value="MUMBAI">MUMBAI</option>
@@ -122,32 +118,8 @@ const Index: React.FC<indexProps> = ({}) => {
         />
       </div>
       <Component />
-      <div className="flex mx-auto align-center justify-center gap-2">
-        {/* <button
-        className="py-2 px-4 bg-indigo-500 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-75"
-        onClick={() =>
-          setNext({ start: next?.start - 10, limit: next?.limit - 10 })
-        }
-      >
-        {" "}
-        Previous{" "}
-      </button>
-      
-      <button className="py-2 px-4 bg-indigo-500 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-75">
-        {filterCount}
-      </button>
-
-
-      <button
-        className="py-2 px-4 bg-indigo-500 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-75"
-        onClick={() =>
-          setNext({ start: next?.start + 10, limit: next?.limit + 10 })
-        }
-      >
-        {" "}
-        Load More{" "}
-      </button> */}
-
+      <div className="flex mx-auto align-center py-10 justify-center gap-2">
+        
         <ReactPaginate
           nextLabel="next >"
           onPageChange={handlePageClick}
@@ -156,7 +128,7 @@ const Index: React.FC<indexProps> = ({}) => {
             next?.limit > filterCount ? 1 : Math.ceil(filterCount / 10)
           }
           previousLabel="< previous"
-          pageClassName="py-2 px-4 bg-indigo-500 text-white font-semibold rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-75"
+          pageClassName="py-2 px-4 bg-indigo-500  text-white font-semibold rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-75"
           pageLinkClassName="bg-indigo-500 text-white font-semibold "
           previousClassName="bg-indigo-500 py-2 px-4 text-white font-semibold"
           previousLinkClassName="bg-indigo-500 text-white font-semibold "
@@ -165,11 +137,18 @@ const Index: React.FC<indexProps> = ({}) => {
           breakLabel="..."
           breakClassName="ext-white font-semibold "
           breakLinkClassName="page-link"
-          containerClassName="relative z-0 inline-flex rounded-md shadow-sm gap-2"
+          containerClassName="z-0 inline-flex rounded-md overflow-x-auto shadow-sm gap-2"
           activeClassName="active"
           renderOnZeroPageCount={null}
         />
-      </div>
+      </div> 
+    </> ) : (
+        <div className="flex mx-auto align-center justify-center mt-48">
+          <div className="font-bold text-4xl text-center" role="status">
+            <span className="text-black">Loading...</span>
+          </div>
+        </div>
+      )}
     </>
   );
 };
