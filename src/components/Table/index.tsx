@@ -7,15 +7,24 @@ interface ISupplierTableProps {
 
 const TableIndex: React.FC<any> = ({ Headers, Columns, Favourite }) => {
   const router = useRouter();
- 
+  const [fav, setFav] = React.useState<any>('');
+
+  React.useEffect(() => {
+    const favourite = localStorage.getItem("favourites")
+    setFav(favourite)
+  }, [fav])
 
   //check ifsc code is in favourites
   const IsFavourite = (code: string) => {
     const favourites = localStorage.getItem("favourites");
+    //check if favourites is not empty
+      if (favourites !== null) {
     const favs = JSON.parse(favourites);
-    if (favs.some(item => item.ifsc === code)) {
+    if (favs.includes(code)) {
+      console.log("IsFavourite",code)
       return true;
-
+      
+    }
     }
     return false;
   };
@@ -28,6 +37,7 @@ const TableIndex: React.FC<any> = ({ Headers, Columns, Favourite }) => {
     const index = favouritesArray.findIndex((item: any) => item.ifsc === id);
     favouritesArray.splice(index,1);
     localStorage.setItem("favourites", JSON.stringify(favouritesArray));
+    setFav(favouritesArray)
   };
 
   const AddToFavourites = (data: any) => {
@@ -39,9 +49,11 @@ const TableIndex: React.FC<any> = ({ Headers, Columns, Favourite }) => {
       } else {
       const newFavourites = [...favouritesArray, data];
       localStorage.setItem("favourites", JSON.stringify(newFavourites));
+      setFav(newFavourites)
     }
     } else {
       localStorage.setItem("favourites", JSON.stringify([data]));
+      setFav(data)
     }
   };
 
@@ -56,6 +68,8 @@ const TableIndex: React.FC<any> = ({ Headers, Columns, Favourite }) => {
     </td>
   );
 
+  
+
   const Td: React.FC<any> = ({ data }) => (
     // loop the object data
     <>
@@ -63,17 +77,18 @@ const TableIndex: React.FC<any> = ({ Headers, Columns, Favourite }) => {
         {Object.keys(data[0]).map((key, index) => (
           <TdContent content={data[0][key]} key={index} />
         ))}
-
-
         <button
         onClick={() => 
           IsFavourite(data[0].ifsc) ? removeFromLocalStorage(data[0].ifsc) : AddToFavourites(data[0])
         }
-        className="mx-auto pt-2 flex text-center align-center justify-center">
-          {IsFavourite(data[0].ifsc) ? 
+        className="mx-auto pt-2 flex text-center align-center  justify-center px-4 py-3">
+          {
+          fav !== '' || fav !== undefined ?
+
+          fav.includes(data[0].ifsc) ? 
           <svg
-            className="w-6 h-6 text-indigo-500"
-            fill='none'
+            className="w-6 h-6 text-indigo-600 "
+            fill='currentColor'
             strokeLinecap="round"
             strokeLinejoin="round"
             strokeWidth="2"
@@ -83,8 +98,8 @@ const TableIndex: React.FC<any> = ({ Headers, Columns, Favourite }) => {
             <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"></path>
           </svg> :
           <svg
-          className="w-6 h-6 text-indigo-500"
-          fill='text-indigo-500'
+          className="w-6 h-6 text-indigo-500 align-center  justify-center"
+          fill='none'
           strokeLinecap="round"
           strokeLinejoin="round"
           strokeWidth="2"
@@ -94,7 +109,7 @@ const TableIndex: React.FC<any> = ({ Headers, Columns, Favourite }) => {
           <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"></path>
         </svg>
           
-          }
+         : '' }
         </button>
       </tr>
     </>

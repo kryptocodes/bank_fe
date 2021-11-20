@@ -11,17 +11,27 @@ const Index: React.FC<indexProps> = ({}) => {
   const [Filter, setFilter] = React.useState<String | Number | any>("");
   const [City, setCity] = React.useState<any>("BANGALORE");
 
+  //eslint-disable-next-line
+
   //axios to fetch github url
   useEffect(() => {
     //create pagination for data fetching
+    const CheckData = localStorage.getItem(City);
+    if(CheckData){
+      setData({data: JSON.parse(CheckData), loading: false});
+    }
+    else {
     setData({ data: [], loading: true });
     axios
       .get(`https://vast-shore-74260.herokuapp.com/banks?city=${City}`)
       .then((res) => {
         console.log(res.data);
+        localStorage.setItem(`${City}`, JSON.stringify(res.data));
         setData({ data: res.data, loading: false });
       });
+    }
   }, [City]);
+
 
   const HeaderProduct = [
     {
@@ -47,9 +57,7 @@ const Index: React.FC<indexProps> = ({}) => {
     },
   ];
 
-  // iterate data objects and map to table rows
 
-  console.log(next);
   let filterCount =
     Filter !== ""
       ? data?.data?.filter((v) => v?.bank_name.includes(Filter)).length
@@ -86,63 +94,68 @@ const Index: React.FC<indexProps> = ({}) => {
 
   const Component = () => (
     <>
-          {data !== undefined && (
-            <TableIndex Headers={HeaderProduct} Columns={ColumnProduct} Favourite />
-          )}
+      {data !== undefined && (
+        <TableIndex Headers={HeaderProduct} Columns={ColumnProduct} Favourite />
+      )}
     </>
   );
   return (
     <>
       {" "}
-      <h1 className="text-4xl mx-auto text-center">Bank</h1>
+      <h1 className="text-4xl mx-auto text-center mt-4 font-sans font-bold uppercase">Bank</h1>
       {!data?.loading ? (
         <>
-      <div className="flex mx-auto py-10 p-4 sm:p-20">
-        <select value={City} onChange={(e) => setCity(e.target.value)}>
-          <option value="BANGALORE">BANGALORE</option>
-          <option value="MUMBAI">MUMBAI</option>
-          <option value="CHENNAI">CHENNAI</option>
-          <option value="KOLKATA">KOLKATA</option>
-          <option value="DELHI">DELHI</option>
-        </select>
+          <div className="flex gap-4 mx-auto py-4 p-4 sm:p-10">
+            <select value={City} onChange={(e) => 
+              {
+              setCity(e.target.value) 
+              setNext({start: 0, limit: 10})
+            }
+            }>
+              <option value="BANGALORE">BANGALORE</option>
+              <option value="MUMBAI">MUMBAI</option>
+              <option value="CHENNAI">CHENNAI</option>
+              <option value="KOLKATA">KOLKATA</option>
+              <option value="DELHI">DELHI</option>
+            </select>
 
-        <input
-          type="text"
-          value={Filter}
-          className="bg-white focus:outline-none focus:shadow-outline border border-gray-300 rounded-lg py-2 px-4 block w-full appearance-none leading-normal"
-          placeholder="Search"
-          onChange={(e) => {
-            setFilter(e.target.value.toUpperCase());
-            setNext({ start: 0, limit: 10 });
-          }}
-        />
-      </div>
-      <Component />
-      <div className="flex mx-auto align-center py-10 justify-center gap-2">
-        
-        <ReactPaginate
-          nextLabel="next >"
-          onPageChange={handlePageClick}
-          pageRangeDisplayed={5}
-          pageCount={
-            next?.limit > filterCount ? 1 : Math.ceil(filterCount / 10)
-          }
-          previousLabel="< previous"
-          pageClassName="py-2 px-4 bg-indigo-500  text-white font-semibold rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-75"
-          pageLinkClassName="bg-indigo-500 text-white font-semibold "
-          previousClassName="bg-indigo-500 py-2 px-4 text-white font-semibold"
-          previousLinkClassName="bg-indigo-500 text-white font-semibold "
-          nextClassName="bg-indigo-500 py-2 px-4 text-white font-semibold "
-          nextLinkClassName="bg-indigo-500 text-white font-semibold "
-          breakLabel="..."
-          breakClassName="ext-white font-semibold "
-          breakLinkClassName="page-link"
-          containerClassName="z-0 inline-flex rounded-md overflow-x-auto shadow-sm gap-2"
-          activeClassName="active"
-          renderOnZeroPageCount={null}
-        />
-      </div> 
-    </> ) : (
+            <input
+              type="text"
+              value={Filter}
+              className="bg-white focus:outline-none focus:shadow-outline border border-gray-300 rounded-lg py-2 px-4 block w-full appearance-none leading-normal"
+              placeholder="Search"
+              onChange={(e) => {
+                setFilter(e.target.value.toUpperCase());
+                setNext({ start: 0, limit: 10 });
+              }}
+            />
+          </div>
+          <Component />
+          <div className="flex mx-auto align-center py-10 justify-center gap-2">
+            <ReactPaginate
+              nextLabel="next >"
+              onPageChange={handlePageClick}
+              pageRangeDisplayed={5}
+              pageCount={
+                next?.limit > filterCount ? 1 : Math.ceil(filterCount / 10)
+              }
+              previousLabel="< previous"
+              pageClassName="py-2 px-4 bg-indigo-500  text-white font-semibold rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-75"
+              pageLinkClassName="bg-indigo-500 text-white font-semibold "
+              previousClassName="bg-indigo-500 py-2 px-4 text-white font-semibold"
+              previousLinkClassName="bg-indigo-500 text-white font-semibold "
+              nextClassName="bg-indigo-500 py-2 px-4 text-white font-semibold "
+              nextLinkClassName="bg-indigo-500 text-white font-semibold "
+              breakLabel="..."
+              breakClassName="ext-white font-semibold "
+              breakLinkClassName="page-link"
+              containerClassName="z-0 inline-flex rounded-md overflow-x-auto shadow-sm gap-2"
+              activeClassName="active"
+              renderOnZeroPageCount={null}
+            />
+          </div>
+        </>
+      ) : (
         <div className="flex mx-auto align-center justify-center mt-48">
           <div className="font-bold text-4xl text-center" role="status">
             <span className="text-black">Loading...</span>
